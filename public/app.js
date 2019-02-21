@@ -1,36 +1,36 @@
-$.getJSON("/articles", function (data) {
+$.getJSON('/articles', function (data) {
     for (var i = 0; i < data.length; i++) {
-        $("#articles").append("<p data-id='" + data[i]._id + "'>" + data[i].title + "<br />" + data[i].link + "</p>");
+        $('#articles').append('<p data-id='' + data[i]._id + ''>' + data[i].title + '<br />' + data[i].link + '</p>');
     }
 });
 
 
-$(document).on("click", "p", function () {
-    $("#notes").empty();
-    var thisId = $(this).attr("data-id");
+$(document).on('click', 'p', function () {
+    $('#notes').empty();
+    var thisId = $(this).attr('data-id');
 
     $.ajax({
-        method: "GET",
-        url: "/articles/" + thisId
+        method: 'GET',
+        url: '/articles/' + thisId
     })
 });
 
-$(document).on("click", "#savenote", function () {
-    var thisId = $(this).attr("data-id");
+$(document).on('click', '#savenote', function () {
+    var thisId = $(this).attr('data-id');
 
     $.ajax({
-        method: "POST",
-        url: "/articles/" + thisId,
+        method: 'POST',
+        url: '/articles/' + thisId,
         data: {
-            title: $("#titleinput").val(),
-            body: $("#bodyinput").val()
+            title: $('#titleinput').val(),
+            body: $('#bodyinput').val()
         }
     })
         .then(function (data) {
             console.log(data);
-            $("#notes").empty();
+            $('#notes').empty();
         });
 
-    $("#titleinput").val("");
-    $("#bodyinput").val("");
+    $('#titleinput').val('');
+    $('#bodyinput').val('');
 });

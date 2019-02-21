@@ -1,34 +1,42 @@
-var express = require("express");
-var exphb = require("express-handlebars");
-var mongoose = require("mongoose");
-var axios = require("axios");
-var cheerio = require("cheerio");
-var MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost/mongoHeadlines";
+var express = require('express');
+var mongoose = require('mongoose');
+var axios = require('axios');
+var cheerio = require('cheerio');
+var MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost/mongoHeadlines';
 mongoose.connect(MONGODB_URI);
 
 
-var db = require("./models");
+var url = 'https://www.nytimes.com/'
+
+request(url, function (err, res, body) {
+    var load = cheerio.load(body);
+    var Headline = load('.balancedHeadLine');
+    var Summary = load('.css-1rrs2s3 e1n8kpyg1', "li");
+})
+
+
+var db = require('./models');
 
 var PORT = 3000;
 
 var app = express();
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-app.use(express.static("public"));
+app.use(express.static('public'));
 
-app.get("/scrape", function (req, res) {
-    axios.get("https://www.nytimes.com/").then(function (response) {
+app.get('/scrape', function (req, res) {
+    axios.get(url).then(function (response) {
         var $ = cheerio.load(response.data);
 
-        $("article h2").each(function (i, element) {
+        $('article h2').each(function (i, element) {
             var result = {};
 
             result.title = $(this)
-                .children("a")
+                .children('a')
                 .text();
             result.link = $(this)
-                .children("a")
-                .attr("href");
+                .children('a')
+                .attr('href');
 
             db.Article.create(result)
                 .then(function (dbArticle) {
@@ -39,11 +47,11 @@ app.get("/scrape", function (req, res) {
                 });
         });
 
-        res.send("Scrape Complete");
+        res.send('Scrape Complete');
     });
 });
 
-app.get("/articles", function (req, res) {
+app.get('/articles', function (req, res) {
     db.Article.find({})
         .then(function (dbArticle) {
             res.json(dbArticle);
@@ -53,9 +61,9 @@ app.get("/articles", function (req, res) {
         });
 });
 
-app.get("/articles/:id", function (req, res) {
+app.get('/articles/:id', function (req, res) {
     db.Article.findOne({ _id: req.params.id })
-        .populate("note")
+        .populate('note')
         .then(function (dbArticle) {
             res.json(dbArticle);
         })
@@ -64,7 +72,7 @@ app.get("/articles/:id", function (req, res) {
         });
 });
 
-app.post("/articles/:id", function (req, res) {
+app.post('/articles/:id', function (req, res) {
     db.Note.create(req.body)
         .then(function (dbNote) {
             return db.Article.findOneAndUpdate({ _id: req.params.id }, { note: dbNote._id }, { new: true });
@@ -79,5 +87,5 @@ app.post("/articles/:id", function (req, res) {
 
 
 app.listen(3000, function () {
-    console.log("App running on port 3000!");
+    console.log('App running on port 3000!');
 });

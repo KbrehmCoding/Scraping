@@ -1,4 +1,4 @@
-var mongoose = require("mongoose");
+var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 var articleSchema = new Schema({
     title: {
@@ -11,10 +11,10 @@ var articleSchema = new Schema({
     },
     note: {
         type: Schema.Types.ObjectId,
-        ref: "Note"
+        ref: 'Note'
     }
 });
 
-var Article = mongoose.model("article", articleSchema);
+var Article = mongoose.model('article', articleSchema);
 
 module.exports = Article;
