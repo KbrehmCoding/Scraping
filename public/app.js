@@ -22,8 +22,8 @@ $(document).on('click', '#savenote', function () {
         method: 'POST',
         url: '/articles/' + thisId,
         data: {
-            title: $('#titleinput').val(),
-            body: $('#bodyinput').val()
+            title: $('#titleInput').val(),
+            body: $('#bodyInput').val()
         }
     })
         .then(function (data) {
@@ -31,6 +31,6 @@ $(document).on('click', '#savenote', function () {
             $('#notes').empty();
         });
 
-    $('#titleinput').val('');
-    $('#bodyinput').val('');
+    $('#titleInput').val('');
+    $('#bodyInput').val('');
 });

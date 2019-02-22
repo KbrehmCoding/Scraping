@@ -10,6 +10,7 @@ mongoose.connect(MONGODB_URI);
 var url = 'https://www.nytimes.com/'
 
 request(url, function (err, res, body) {
+    //TODO test these classes to make sure it pulls what I want
     var load = cheerio.load(body);
     var Headline = load('.balancedHeadLine');
     var Summary = load('.css-1rrs2s3 e1n8kpyg1', "li");
@@ -25,11 +26,11 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(express.static('public'));
 
-app.get('/scrape', function (req, res) {
+app.get('/', function (req, res) {
     axios.get(url).then(function (response) {
         var $ = cheerio.load(response.data);
 
-        $('article h2').each(function (i, element) {
+        $('').each(function (i, element) {
             var result = {};
 
             result.title = $(this)
@@ -52,7 +53,7 @@ app.get('/scrape', function (req, res) {
     });
 });
 
-app.get('/articles', function (req, res) {
+app.get('/article', function (req, res) {
     db.Article.find({})
         .then(function (dbArticle) {
             res.json(dbArticle);
@@ -62,7 +63,7 @@ app.get('/articles', function (req, res) {
         });
 });
 
-app.get('/articles/:id', function (req, res) {
+app.get('/article/:id', function (req, res) {
     db.Article.findOne({ _id: req.params.id })
         .populate('note')
         .then(function (dbArticle) {
@@ -73,7 +74,7 @@ app.get('/articles/:id', function (req, res) {
         });
 });
 
-app.post('/articles/:id', function (req, res) {
+app.post('/article/:id', function (req, res) {
     db.Note.create(req.body)
         .then(function (dbNote) {
             return db.Article.findOneAndUpdate({ _id: req.params.id }, { note: dbNote._id }, { new: true });
