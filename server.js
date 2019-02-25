@@ -30,7 +30,7 @@ app.get('/', function (req, res) {
     axios.get(url).then(function (response) {
         var $ = cheerio.load(response.data);
 
-        $('').each(function (i, element) {
+        $('article h2').each(function (i, element) {
             var result = {};
 
             result.title = $(this)
