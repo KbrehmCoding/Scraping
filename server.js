@@ -1,15 +1,17 @@
 var express = require('express');
-var exphb = require('express-handlebars');
+var exphbs = require('express-handlebars');
 var mongoose = require('mongoose');
 var axios = require('axios');
 var cheerio = require('cheerio');
+var Article = require('./models/article');
 var MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost/mongoHeadlines';
-mongoose.connect(MONGODB_URI);
+
+mongoose.connect('mongodb://localhost:27017/articles', {useNewUrlParser: true});
 
 
 var url = 'https://www.nytimes.com/'
 
-request(url, function (err, res, body) {
+axios(url, function (err, res, body) {
     //TODO test these classes to make sure it pulls what I want
     var load = cheerio.load(body);
     var Headline = load('.balancedHeadLine');
@@ -26,6 +28,9 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(express.static('public'));
 
+app.engine('handlebars', exphbs({defaultLayout: 'main'}));
+app.set('view engine', 'handlebars');
+
 app.get('/', function (req, res) {
     axios.get(url).then(function (response) {
         var $ = cheerio.load(response.data);
@@ -40,7 +45,7 @@ app.get('/', function (req, res) {
                 .children('a')
                 .attr('href');
 
-            db.Article.create(result)
+            Article.create(result)
                 .then(function (dbArticle) {
                     console.log(dbArticle);
                 })
@@ -54,7 +59,7 @@ app.get('/', function (req, res) {
 });
 
 app.get('/article', function (req, res) {
-    db.Article.find({})
+    Article.find({})
         .then(function (dbArticle) {
             res.json(dbArticle);
         })
@@ -64,7 +69,7 @@ app.get('/article', function (req, res) {
 });
 
 app.get('/article/:id', function (req, res) {
-    db.Article.findOne({ _id: req.params.id })
+    Article.findOne({ _id: req.params.id })
         .populate('note')
         .then(function (dbArticle) {
             res.json(dbArticle);
@@ -77,7 +82,7 @@ app.get('/article/:id', function (req, res) {
 app.post('/article/:id', function (req, res) {
     db.Note.create(req.body)
         .then(function (dbNote) {
-            return db.Article.findOneAndUpdate({ _id: req.params.id }, { note: dbNote._id }, { new: true });
+            return Article.findOneAndUpdate({ _id: req.params.id }, { note: dbNote._id }, { new: true });
         })
         .then(function (dbArticle) {
             res.json(dbArticle);
