@@ -4,6 +4,8 @@ var mongoose = require('mongoose');
 var axios = require('axios');
 var cheerio = require('cheerio');
 var Article = require('./models/article');
+var Note = require('./models/index');
+var Index = require('./models/index');
 var MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost/mongoHeadlines';
 
 mongoose.connect('mongodb://localhost:27017/articles', {useNewUrlParser: true});
