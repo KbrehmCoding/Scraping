@@ -16,8 +16,8 @@ var url = 'https://www.nytimes.com/'
 axios(url, function (err, res, body) {
     //TODO test these classes to make sure it pulls what I want
     var load = cheerio.load(body);
-    var Headline = load('.balancedHeadLine');
-    var Summary = load('.css-1rrs2s3 e1n8kpyg1', "li");
+    var Title = load('.title');
+    var Summary = load('i, element');
 })
 
 
@@ -37,7 +37,7 @@ app.get('/', function (req, res) {
     axios.get(url).then(function (response) {
         var $ = cheerio.load(response.data);
 
-        $('article h2').each(function (i, element) {
+        $('p.title').each(function (i, element) {
             var result = {};
 
             result.title = $(this)
